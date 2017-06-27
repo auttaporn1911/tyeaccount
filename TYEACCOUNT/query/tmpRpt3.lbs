@@ -1,0 +1,5 @@
+﻿insert into {0}.TACSCL                                   
+select * from (select distinct CCCSCT,CCCSGP              
+from {0}.TASMCC) A full join (select distinct CLMTTP from
+{0}.TACLMA) B                                            
+on 1 = 1                                                  

@@ -1,0 +1,7 @@
+﻿select MAITCL ItemClass,MAITCD Item,MADESC Description,	MALEN Length,	MACSCD CustCode,MACSNM CustName,	
+				MADOCT DocType,	MADOCN InvoiceNo,MADODT InvoiceDate,MAORDT OrderDate,	MARQDT ReqDate,	MAODTY OrderType,	MAORDN OrderNo,	MAQTY,
+                MAUPRC UnitPrice, MAAMT Amount, MAUCST UnitCost,MATCST TotalCost,coalesce(MATWGH,0) TotalWeight,MAPCEX PercentExp,MACSTP,	MARGN,	MAPDCD,MAPRFC Profic, 
+				CSACCD AccountCode,CSCSNM CustName,trim(CSCUTM) CUSTOM,CSCSGP CustGroup,CSSECT Section,trim(CLMTMN) MatName
+from  {0}.TACSMA 
+Left join {0}.TASMAS on MACSCD = CSCSCD left join   {0}.TACLMA on  CLCLCD = MAITCL 
+order by CLMTMN ,CSCSGP,CSCUTM

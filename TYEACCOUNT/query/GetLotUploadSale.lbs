@@ -1,0 +1,4 @@
+﻿select min(MADODT) startDate , max(MADODT) endDate,count(MADOCN) QTY,SUM(MAAMT) AMOUNT,
+MALOT LotNO from {0}.TASMAS
+Group by MALOT
+Order by MALOT DESC

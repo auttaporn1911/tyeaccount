@@ -1,0 +1,3 @@
+select AGNAME,AGLOT,AGADDT,
+cast(min(cast((AGYEAR || (CASE WHEN AGMONM <= 9 THEN cast(('0'|| AGMONM) as varchar(2)) ELSE cast((AGMONM) as varchar(2)) END)) as int)) || '-' ||max(cast((AGYEAR || (CASE WHEN AGMONM <= 9 THEN cast(('0'|| AGMONM) as varchar(2)) ELSE cast((AGMONM) as varchar(2)) END)) as int))  as varchar(25)) as MinMax
+from  {0}.TASPAG group by AGNAME,AGLOT,AGADDT order by AGLOT DESC,AGNAME ASC

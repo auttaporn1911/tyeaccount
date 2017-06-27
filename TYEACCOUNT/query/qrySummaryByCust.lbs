@@ -1,0 +1,13 @@
+﻿insert into {0}.TASMCC(CCMONM,CCYEAR,CCAMNT,CCQTY,CCPROF,CCFCST,CCLOT,CCCSCT,CCCSSC,CCCSGP,CCMTTP,CCEFFD,CCENDD)
+select cast(substring(MADODT,5,2) as dec(2,0)) as month,
+cast(substring(MADODT,1,4) as dec(4,0)) as year,
+	sum(MAAMT) as amount,sum(MAQTY) as qty,
+	sum(MAPRFP) as profit,sum(MATCST) as cost ,MALOT,CSCUTM,CSSECT,CSCSGP,CLMTTP,CSEFFD,CSENDD
+	from {0}.TASMAS 
+	left join {0}.TACSMA on CSCSCD = MACSCD and substring(MADODT,1,6) >= substring(CSEFFD,1,6) 
+		and (substring(MADODT,1,6) <= substring(CSENDD,1,6) or CSENDD = 0)
+	left join {0}.TACLMA on maitcl = clclcd
+	where (MALOT = {1} or {1} = 0)
+	group by cast(substring(MADODT,5,2) as dec(2,0)),cast(substring(MADODT,1,4) as dec(4,0)),MALOT
+	,CSCUTM,CSSECT,CSCSGP,CLMTTP,CSEFFD,CSENDD
+	

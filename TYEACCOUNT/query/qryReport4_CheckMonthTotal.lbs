@@ -1,0 +1,124 @@
+select * from openquery (as400,'SELECT  *  FROM (
+SELECT  (YEAR || RIGHT(''0'' || MONTH,2)) as YM  FROM (
+  SELECT * FROM (
+    SELECT MainType,SubType,CLMTTP as CheckType,MainCalss.Class,Quality,Amount,Cost,Profit,MONth,YearCom,YEAR,AGENT, 1 as TypeLoop 
+    FROM (
+     SELECT CLCLCD as Class,CLMTMN,CLMTTP FROM  {2}.TACLMA C
+    	  UNION ALL
+    	  SELECT * FROM (
+   	   SELECT AGITCL as Class,CLMTMN,CLMTTP FROM  {2}.TACLMA A
+    	   FULL JOIN {2}.TASPAG B ON A.CLCLCD = B.AGITCL  WHERE CLCLCD is null GROUP BY AGITCL,CLMTMN,CLMTTP) D
+    ) MainCalss
+    full join (
+     SELECT * FROM (
+      SELECT AGITTY as MainType,AGITNM as SubType,AGITGP as Checkgroup,AGITCL as Class,
+      COALESCE(AGQTY,0) as Quality,COALESCE(AGAMNT,0) as Amount,COALESCE(AGFCST,0) as Cost,COALESCE(AGPROF,0) as Profit,
+      COALESCE(SAQTY,0) as QualityR,COALESCE(SAAMNT,0) as AmountR,COALESCE(SAFCST,0) as CostR,COALESCE(SAPROF,0) as ProfitR,
+      AGMONM as MONth,AGPLYR as YearCom,AGYEAR as YEAR,''P_BKK'' as AGENT FROM  {2}.TASPAG A
+      left join {2}.TASMAG B ON A.AGITCL = B.SACLAS and B.SACSTM=''Bangkok'' and A.AGMONM = B.SAMONM and A.AGYEAR = B.SAYEAR
+      where AGNAME = ''BKK'') as U1
+    UNION ALL
+    SELECT * FROM (
+     SELECT AGITTY as MainType,AGITNM as SubType,AGITGP as Checkgroup,SACLAS as Class,
+      COALESCE(AGQTY,0) as Quality,COALESCE(AGAMNT,0) as Amount,COALESCE(AGFCST,0) as Cost,COALESCE(AGPROF,0) as Profit,
+      COALESCE(SAQTY,0) as QualityR,COALESCE(SAAMNT,0) as AmountR,COALESCE(SAFCST,0) as CostR,COALESCE(SAPROF,0) as ProfitR,
+      SAMONM as MONth,SAPLYR as YearCom,SAYEAR as YEAR,''P_BKK'' as AGENT
+     FROM {2}.TASMAG A
+     left join {2}.TASPAG B ON B.AGITCL = A.SACLAS and B.AGNAME = ''BKK'' and B.AGMONM = A.SAMONM and B.AGYEAR = A.SAYEAR
+     where SACSTM = ''Bangkok'' and AGITCL is null) as U2
+    ) JM ON JM.Class = MainCalss.Class 
+    ORDER BY MainCalss.Class
+  ) UM1
+  UNION ALL
+  SELECT * FROM (
+    SELECT MainType,SubType,CLMTTP as CheckType,MainCalss.Class,Quality,Amount,Cost,Profit,MONth,YearCom,YEAR,AGENT, 2 as TypeLoop 
+    FROM (
+     SELECT CLCLCD as Class,CLMTMN,CLMTTP FROM  {2}.TACLMA C
+    	  UNION ALL
+    	  SELECT * FROM (
+   	   SELECT AGITCL as Class,CLMTMN,CLMTTP FROM  {2}.TACLMA A
+    	   FULL JOIN {2}.TASPAG B ON A.CLCLCD = B.AGITCL  WHERE CLCLCD is null GROUP BY AGITCL,CLMTMN,CLMTTP) D
+    ) MainCalss
+    full join (
+     SELECT * FROM (
+      SELECT AGITTY as MainType,AGITNM as SubType,AGITGP as Checkgroup,AGITCL as Class,
+      COALESCE(AGQTY,0) as Quality,COALESCE(AGAMNT,0) as Amount,COALESCE(AGFCST,0) as Cost,COALESCE(AGPROF,0) as Profit,
+      COALESCE(SAQTY,0) as QualityR,COALESCE(SAAMNT,0) as AmountR,COALESCE(SAFCST,0) as CostR,COALESCE(SAPROF,0) as ProfitR,
+      AGMONM as MONth,AGPLYR as YearCom,AGYEAR as YEAR,''P_UPCOUNTRY'' as AGENT FROM  {2}.TASPAG A
+      left join {2}.TASMAG B ON A.AGITCL = B.SACLAS and B.SACSTM=''Upcountry'' and A.AGMONM = B.SAMONM and A.AGYEAR = B.SAYEAR
+      where AGNAME = ''UPCOUNTRY'') as U1
+    UNION ALL
+    SELECT * FROM (
+     SELECT AGITTY as MainType,AGITNM as SubType,AGITGP as Checkgroup,SACLAS as Class,
+      COALESCE(AGQTY,0) as Quality,COALESCE(AGAMNT,0) as Amount,COALESCE(AGFCST,0) as Cost,COALESCE(AGPROF,0) as Profit,
+      COALESCE(SAQTY,0) as QualityR,COALESCE(SAAMNT,0) as AmountR,COALESCE(SAFCST,0) as CostR,COALESCE(SAPROF,0) as ProfitR,
+      SAMONM as MONth,SAPLYR as YearCom,SAYEAR as YEAR,''P_UPCOUNTRY'' as AGENT
+     FROM {2}.TASMAG A
+     left join {2}.TASPAG B ON B.AGITCL = A.SACLAS and B.AGNAME = ''UPCOUNTRY'' and B.AGMONM = A.SAMONM and B.AGYEAR = A.SAYEAR
+     where SACSTM = ''Upcountry'' and AGITCL is null) as U2
+    ) JM ON JM.Class = MainCalss.Class 
+    ORDER BY MainCalss.Class
+  ) UM2
+  UNION ALL
+  SELECT * FROM (
+    SELECT MainType,SubType,CLMTTP as CheckType,MainCalss.Class,QualityR,AmountR,CostR,ProfitR,MONth,YearCom,YEAR,AGENT, 3 as TypeLoop 
+    FROM (
+     SELECT CLCLCD as Class,CLMTMN,CLMTTP FROM  {2}.TACLMA C
+    	  UNION ALL
+    	  SELECT * FROM (
+   	   SELECT AGITCL as Class,CLMTMN,CLMTTP FROM  {2}.TACLMA A
+    	   FULL JOIN {2}.TASPAG B ON A.CLCLCD = B.AGITCL  WHERE CLCLCD is null GROUP BY AGITCL,CLMTMN,CLMTTP) D
+    ) MainCalss
+    full join (
+     SELECT * FROM (
+      SELECT AGITTY as MainType,AGITNM as SubType,AGITGP as Checkgroup,AGITCL as Class,
+      COALESCE(AGQTY,0) as Quality,COALESCE(AGAMNT,0) as Amount,COALESCE(AGFCST,0) as Cost,COALESCE(AGPROF,0) as Profit,
+      COALESCE(SAQTY,0) as QualityR,COALESCE(SAAMNT,0) as AmountR,COALESCE(SAFCST,0) as CostR,COALESCE(SAPROF,0) as ProfitR,
+      AGMONM as MONth,AGPLYR as YearCom,AGYEAR as YEAR,''R_BKK'' as AGENT FROM  {2}.TASPAG A
+      left join {2}.TASMAG B ON A.AGITCL = B.SACLAS and B.SACSTM=''Bangkok'' and A.AGMONM = B.SAMONM and A.AGYEAR = B.SAYEAR
+      where AGNAME = ''BKK'') as U1
+    UNION ALL
+    SELECT * FROM (
+     SELECT AGITTY as MainType,AGITNM as SubType,AGITGP as Checkgroup,SACLAS as Class,
+      COALESCE(AGQTY,0) as Quality,COALESCE(AGAMNT,0) as Amount,COALESCE(AGFCST,0) as Cost,COALESCE(AGPROF,0) as Profit,
+      COALESCE(SAQTY,0) as QualityR,COALESCE(SAAMNT,0) as AmountR,COALESCE(SAFCST,0) as CostR,COALESCE(SAPROF,0) as ProfitR,
+      SAMONM as MONth,SAPLYR as YearCom,SAYEAR as YEAR,''R_BKK'' as AGENT
+     FROM {2}.TASMAG A
+     left join {2}.TASPAG B ON B.AGITCL = A.SACLAS and B.AGNAME = ''BKK'' and B.AGMONM = A.SAMONM and B.AGYEAR = A.SAYEAR
+     where SACSTM = ''Bangkok'' and AGITCL is null) as U2
+    ) JM ON JM.Class = MainCalss.Class 
+    ORDER BY MainCalss.Class
+  ) UM3
+  UNION ALL
+  SELECT * FROM (
+    SELECT MainType,SubType,CLMTTP as CheckType,MainCalss.Class,QualityR,AmountR,CostR,ProfitR,MONth,YearCom,YEAR,AGENT, 4 as TypeLoop 
+    FROM (
+     SELECT CLCLCD as Class,CLMTMN,CLMTTP FROM  {2}.TACLMA C
+    	  UNION ALL
+    	  SELECT * FROM (
+   	   SELECT AGITCL as Class,CLMTMN,CLMTTP FROM  {2}.TACLMA A
+    	   FULL JOIN {2}.TASPAG B ON A.CLCLCD = B.AGITCL  WHERE CLCLCD is null GROUP BY AGITCL,CLMTMN,CLMTTP) D
+    ) MainCalss
+    full join (
+     SELECT * FROM (
+      SELECT AGITTY as MainType,AGITNM as SubType,AGITGP as Checkgroup,AGITCL as Class,
+      COALESCE(AGQTY,0) as Quality,COALESCE(AGAMNT,0) as Amount,COALESCE(AGFCST,0) as Cost,COALESCE(AGPROF,0) as Profit,
+      COALESCE(SAQTY,0) as QualityR,COALESCE(SAAMNT,0) as AmountR,COALESCE(SAFCST,0) as CostR,COALESCE(SAPROF,0) as ProfitR,
+      AGMONM as MONth,AGPLYR as YearCom,AGYEAR as YEAR,''R_UPCOUNTRY'' as AGENT FROM  {2}.TASPAG A
+      left join {2}.TASMAG B ON A.AGITCL = B.SACLAS and B.SACSTM=''Upcountry'' and A.AGMONM = B.SAMONM and A.AGYEAR = B.SAYEAR
+      where AGNAME = ''UPCOUNTRY'') as U1
+    UNION ALL
+    SELECT * FROM (
+     SELECT AGITTY as MainType,AGITNM as SubType,AGITGP as Checkgroup,SACLAS as Class,
+      COALESCE(AGQTY,0) as Quality,COALESCE(AGAMNT,0) as Amount,COALESCE(AGFCST,0) as Cost,COALESCE(AGPROF,0) as Profit,
+      COALESCE(SAQTY,0) as QualityR,COALESCE(SAAMNT,0) as AmountR,COALESCE(SAFCST,0) as CostR,COALESCE(SAPROF,0) as ProfitR,
+      SAMONM as MONth,SAPLYR as YearCom,SAYEAR as YEAR,''R_UPCOUNTRY'' as AGENT
+     FROM {2}.TASMAG A
+     left join {2}.TASPAG B ON B.AGITCL = A.SACLAS and B.AGNAME = ''UPCOUNTRY'' and B.AGMONM = A.SAMONM and B.AGYEAR = A.SAYEAR
+     where SACSTM = ''Upcountry'' and AGITCL is null) as U2
+    ) JM ON JM.Class = MainCalss.Class 
+    ORDER BY MainCalss.Class
+  ) UM4
+ ) MAINQUERY
+ where (YEAR || RIGHT(''0'' || MONTH,2)) between {0} and {1}) as MM
+ Group by YM')

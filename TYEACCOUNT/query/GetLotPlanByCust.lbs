@@ -1,0 +1,2 @@
+﻿select min(CSYEAR || RIGHT('0' || CSMONM,2)) STARTDATE
+,max(CSYEAR || RIGHT('0' || CSMONM,2)) ENDDATE,CSLOT LOTNO from {0}.TASPCS group by CSLOT

@@ -1,0 +1,89 @@
+﻿select * from openquery(AS400,'select LSGRUP as GROUP,
+LSCUST as CUSTOM,LSMATE as MATERIAL,COALESCE(CCQTY,0) as QTY ,COALESCE(CCAMNT,0) as AMOUNT,
+COALESCE(CCFCST,0) as COST,COALESCE(CCPROF,0) as PROFIT,M.MONTH as MONTH,M.YEAR as YEAR,TRIM(MNNAME) as MONTHNAME ,R1.ORDRNO OrderMat,R2.ORDRNO OrderGroup,
+''RESULT'' as DataType ,2 DataTYPEID
+from {2}.TACSCL
+FULl JOIN (select distinct CCMONM as MONTH,CCYEAR as YEAR from {2}.TASMCC) M on 1=1
+left join {2}.TASMCC A
+on trim(upper(CCCSCT)) = trim(upper(LSCUST)) AND upper(LSMATE) = upper(CCMTTP) 
+AND A.CCMONM = M.MONTH
+left join {2}.TAMONT on MNMOID = M.MONTH
+left join {2}.TAORDR R1 on R1.ORNAME = LSMATE and R1.ORTYPE = ''CUST DES''
+left join {2}.TAORDR R2 on upper(R2.ORNAME) = upper(LSGRUP)  and R2.ORTYPE = ''CUSTGROUP''
+where (YEAR || RIGHT(''0'' || MONTH,2)) between {0} and {1}
+
+UNION ALL
+select 
+LSGRUP as GROUP,LSCUST as CUSTOM,
+LSMATE as MATERIAL,COALESCE(CSQTY,0) as QTY,COALESCE(CSAMNT,0) as AMOUNT,
+COALESCE(CSFCST,0) as COST,COALESCE(CSPROF,0) as PROFIT,M.MONTH as MONTH,M.YEAR as YEAR,TRIM(MNNAME) as MONTHNAME ,R1.ORDRNO OrderMat,R2.ORDRNO OrderGroup,
+''SHORT PLAN'' as DataTYPE,1 DataTYPEID
+from  {2}.TACSCL 
+FULl JOIN (select distinct CSMONM as MONTH,CSYEAR as YEAR from {2}.TASPCS) M on 1=1	
+left join 
+	(select * from {2}.TASPCS
+	inner join (select distinct CSCSGP,CSCUTM from {2}.TACSMA) T
+	on trim(upper(T.CSCUTM)) = trim(upper(CSCUST))) TB on trim(upper(CSCUST)) = trim(upper(LSCUST)) AND upper(LSMATE) = upper(CSMAT) 
+	and M.YEAR = TB.CSYEAR and M.MONTH = TB.CSMONM AND upper(LSGRUP) = upper(CSCSGP)
+left join {2}.TAMONT on MNMOID = M.MONTH
+left join {2}.TAORDR R1 on R1.ORNAME = LSMATE and R1.ORTYPE = ''CUST DES''
+left join {2}.TAORDR R2 on upper(R2.ORNAME) = upper(LSGRUP)  and R2.ORTYPE = ''CUSTGROUP''
+where (YEAR || RIGHT(''0'' || MONTH,2)) between {0} and {1}
+
+UNION ALL
+select LSGRUP as GROUP,LSCUST as CUSTOM,
+LSMATE as MATERIAL,COALESCE(B.CCQTY,0) - COALESCE(A.CSQTY,0) as QTY,COALESCE(B.CCAMNT,0)- COALESCE(A.CSAMNT,0) as AMOUNT,
+COALESCE(B.CCFCST,0) - COALESCE(A.CSFCST,0) as COST,COALESCE(B.CCPROF,0)-COALESCE(A.CSPROF,0) as PROFIT,
+M.MONTH as MONTH,M.YEAR as YEAR,TRIM(MNNAME) as MONTHNAME ,R1.ORDRNO OrderMat,R2.ORDRNO OrderGroup,
+''(B) - (A)'' as DataTYPE,3 as DataTYPEID
+from  {2}.TACSCL 
+FULl JOIN (select distinct CSMONM as MONTH,CSYEAR as YEAR from {2}.TASPCS) M on 1=1	
+left join 
+	(select * from {2}.TASPCS
+	inner join (select distinct CSCSGP,CSCUTM from {2}.TACSMA) T
+	on trim(upper(T.CSCUTM)) = trim(upper(CSCUST))) A on trim(upper(CSCUST)) = trim(upper(LSCUST)) AND upper(LSMATE) = upper(CSMAT) 
+	and M.YEAR = A.CSYEAR and M.MONTH = A.CSMONM  and  upper(LSGRUP) = upper(CSCSGP)
+left join {2}.TASMCC B
+on trim(upper(CCCSCT)) = trim(upper(LSCUST)) AND upper(LSMATE) = upper(CCMTTP)
+AND B.CCMONM = M.MONTH
+left join {2}.TAMONT on MNMOID = M.MONTH
+left join {2}.TAORDR R1 on R1.ORNAME = LSMATE and R1.ORTYPE = ''CUST DES''
+left join {2}.TAORDR R2 on upper(R2.ORNAME) = upper(LSGRUP)  and R2.ORTYPE = ''CUSTGROUP''
+where (YEAR || RIGHT(''0'' || MONTH,2)) between {0} and {1}
+UNION ALL
+
+select LSGRUP as GROUP,LSCUST as CUSTOM,
+LSMATE as MATERIAL,COALESCE(C.CCQTY,0) as QTY,COALESCE(C.CCAMNT,0) as AMOUNT,
+COALESCE(C.CCFCST,0) as COST,COALESCE(C.CCPROF,0) as PROFIT,
+M.MONTH,M.YEAR as YEAR,TRIM(MNNAME) as MONTHNAME ,R1.ORDRNO OrderMat,R2.ORDRNO OrderGroup,
+''(C)'' as DataTYPE,4 DataTYPEID
+from  {2}.TACSCL 
+FULl JOIN (select distinct CSMONM as MONTH,CSYEAR as YEAR from {2}.TASPCS) M on 1=1	
+left join {2}.TASMCC C
+	on trim(upper(CCCSCT)) = trim(upper(LSCUST)) AND upper(LSMATE) = upper(CCMTTP) 
+	AND CCMONM = case when M.MONTH = 1 then 12 else M.MONTH - 1 end
+	AND CCYEAR = case when M.MONTH = 1 then  M.YEAR - 1 else M.YEAR  end
+left join {2}.TAMONT on MNMOID = M.MONTH
+left join {2}.TAORDR R1 on R1.ORNAME = LSMATE and R1.ORTYPE = ''CUST DES''
+left join {2}.TAORDR R2 on upper(R2.ORNAME) = upper(LSGRUP)  and R2.ORTYPE = ''CUSTGROUP''
+where (YEAR || RIGHT(''0'' || MONTH,2)) between {0} and {1}
+UNION ALL
+
+select LSGRUP as GROUP,LSCUST as CUSTOM,
+LSMATE as MATERIAL,COALESCE(B.CCQTY,0)-COALESCE(C.CCQTY,0) as QTY,COALESCE(B.CCAMNT,0)-COALESCE(C.CCAMNT,0) as AMOUNT,
+COALESCE(B.CCFCST,0)-COALESCE(C.CCFCST,0) as COST,COALESCE(B.CCPROF,0)-COALESCE(C.CCPROF,0) as PROFIT,
+M.MONTH,M.YEAR as YEAR,TRIM(MNNAME) as MONTHNAME ,R1.ORDRNO OrderMat,R2.ORDRNO OrderGroup,
+''(B)-(C)'' as DataTYPE,5 DataTYPEID
+from  {2}.TACSCL 
+FULl JOIN (select distinct CSMONM as MONTH,CSYEAR as YEAR from {2}.TASPCS) M on 1=1	
+left join {2}.TASMCC B
+	on trim(upper(B.CCCSCT)) = trim(upper(LSCUST)) AND upper(LSMATE) = upper(B.CCMTTP) 
+	AND B.CCMONM = M.MONTH
+left join {2}.TASMCC C
+	on trim(upper(C.CCCSCT)) = trim(upper(LSCUST)) AND upper(LSMATE) = upper(C.CCMTTP) 
+	AND C.CCMONM = M.MONTH - 1
+left join {2}.TAMONT on MNMOID = M.MONTH
+left join {2}.TAORDR R1 on R1.ORNAME = LSMATE and R1.ORTYPE = ''CUST DES''
+left join {2}.TAORDR R2 on upper(R2.ORNAME) = upper(LSGRUP)  and R2.ORTYPE = ''CUSTGROUP''
+where (YEAR || RIGHT(''0'' || MONTH,2)) between {0} and {1}
+Order by OrderGroup,CUSTOM,OrderMat,YEAR,MONTH, DataTYPEID')

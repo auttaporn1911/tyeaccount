@@ -1,0 +1,7 @@
+﻿insert into {0}.TASMSC(SCCLAS,SCMONM,SCYEAR,SCAMNT,SCQTY,SCPROF,SCFCST,SCLOT)
+select maitcl,cast(substring(MADODT,5,2) as dec(2,0)) as month,cast(substring(MADODT,1,4) as dec(4,0)) as year,
+sum(MAAMT) as amount,sum(MAQTY) as qty,
+sum(MAPRFP) as profit,sum(MATCST) as cost ,MALOT
+from {0}.TASMAS 
+where (MALOT = {1} or {1} = 0)
+group by maitcl, cast(substring(MADODT,5,2) as dec(2,0)),cast(substring(MADODT,1,4) as dec(4,0)),MALOT

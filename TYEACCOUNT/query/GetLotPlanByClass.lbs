@@ -1,0 +1,2 @@
+﻿select min(SPYEAR || RIGHT('0' || SPMONM,2)) STARTDATE
+,max(SPYEAR || RIGHT('0' || SPMONM,2)) ENDDATE,SPLOT as LOTNO from {0}.TASPSA group by SPLOT

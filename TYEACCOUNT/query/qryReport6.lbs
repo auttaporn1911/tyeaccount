@@ -1,0 +1,5 @@
+select * from {2}.TASMAS 
+where CAST(MADODT as int) Between CAST({0} as int) and CAST({1} as int) 
+and MADOCT not in ('RI','CI')
+order by MADOCT,MADODT
+

@@ -1,0 +1,9 @@
+﻿insert into {0}.TASMAG(SACLAS,SAMONM,SAYEAR,SAAMNT,SAQTY,SAPROF,SAFCST,SALOT,SACSTM)
+select maitcl,cast(substring(MADODT,5,2) as dec(2,0)) as month,cast(substring(MADODT,1,4) as dec(4,0)) as year,
+sum(MAAMT) as amount,sum(MAQTY) as qty,
+sum(MAPRFP) as profit,sum(MATCST) as cost ,MALOT,CSCUTM CUSTOM
+from {0}.TASMAS 
+left join {0}.TACSMA on MACSCD = CSCSCD and substring(MADODT,1,6) >= substring(CSEFFD,1,6) 
+		and (substring(MADODT,1,6) <= substring(CSENDD,1,6) or CSENDD = 0)
+where (MALOT = {1} or {1} = 0)
+group by maitcl, cast(substring(MADODT,5,2) as dec(2,0)),cast(substring(MADODT,1,4) as dec(4,0)),MALOT,CSCUTM

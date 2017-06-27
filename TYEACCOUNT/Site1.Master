@@ -1,0 +1,77 @@
+﻿<%@ Master Language="VB" AutoEventWireup="false" CodeBehind="Site2.master.vb" Inherits="TYEACCOUNT.Site2" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+   
+
+    <link rel="stylesheet" type="text/css" href="App_Themes/basic1.css" media="screen" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+    <script type="text/javascript">
+        function isNumber(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
+        }
+
+        function DisplayLoadingModal() {
+            // Build loading element (example)
+            $('body').append("<div id='loading'><img src='http://blog.teamtreehouse.com/wp-content/uploads/2015/05/InternetSlowdown_Day.gif' height='300' width='300' /></div>");
+
+            // Create a loading element and display it
+            $("#loading").dialog({
+                height: 360,
+                width: 360,
+                modal: true
+            });
+            // Hide any titlebars for your modal
+            $(".ui-dialog-titlebar").hide();
+        }
+        </script>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        
+        <div class="head">
+            <div class="logout" style="color:#ffffff; height: 19px;"><asp:LinkButton runat="server" ID="lnLogout" Text="Logout" ForeColor="White"></asp:LinkButton></div>
+            <span>THAI YAZAKI</span> 
+        </div>
+        <ul>
+            <li><a class="active" href="#home">Home</a></li>
+            <li><a href="MenuUpload.aspx">Upload Master</a></li>
+
+
+            <li><a href="printreport1.aspx">Report 1 : Sales Break Down</a></li>
+            <li><a href="printreport2.aspx">Report 2 : Sales Comparison by Class</a></li>
+            <li><a href="printreport3.aspx">Report 3 : Sales Comparison by Customer</a></li>
+            <li><a href="printreport4.aspx">Report 4 : Compare Sales Agent</a></li>
+            
+            <li><a href="printreport6.aspx">Report 6 : Cancel/Return/Discount</a></li>
+            <li><a href="printreport7.aspx">Report 7 : Cu W/R</a></li>
+           
+        </ul>
+        <div class="content1">
+
+            <h1>TYE ACCOUNTING REPORT</h1>
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+        <div class="footer">
+            TYE Accounting Report Version 1.0.0.1&nbsp;&nbsp;&nbsp; 
+            <br />
+            Copyright © 2005-2018 Thai Yazaki CO.,LTD. All Rights Reserved.&nbsp;&nbsp;  
+        </div>
+    </form>
+</body>
+</html>
