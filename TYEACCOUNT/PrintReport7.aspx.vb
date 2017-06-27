@@ -35,7 +35,6 @@ Public Class WebForm10
     End Property
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
-
     End Sub
 
     Protected Sub btnPrint_Click(sender As Object, e As EventArgs) Handles btnPrint.Click
